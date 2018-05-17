@@ -1,0 +1,49 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        //JDK1.8lambda编程风格支持（同时拓展支持JDK1.6\1.7）
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    }
+
+    //插件的引用库~从上到下下载引用，上游找不到则往下游找
+    repositories {
+        mavenLocal()
+        //使用指定的远程maven库
+        maven {
+            //来自阿里云的maven镜像
+            url 'http://maven.aliyun.com/nexus/content/groups/public'
+        }
+        jcenter()
+        mavenCentral()
+        google()
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            //来自阿里云的maven镜像
+            url 'http://maven.aliyun.com/nexus/content/groups/public'
+        }
+
+        // 阿里HttpDNS
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
+        }
+
+        maven { url "https://jitpack.io" }
+        jcenter()
+        mavenCentral()
+        google()
+    }
+}
+
+
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+}

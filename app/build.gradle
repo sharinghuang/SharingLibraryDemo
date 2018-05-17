@@ -1,0 +1,258 @@
+apply plugin: 'com.android.application'
+
+/**定义打包时间函数*/
+def packageTime() {
+    return new Date().format("yyyyMMdd-HHmm")
+}
+
+/**定义打包的用户名*/
+def hostName() {
+    return System.getProperty("user.name") + "@" + InetAddress.localHost.hostName
+}
+/**定义打包时最后一次commit的sha值*/
+def revision() {
+    def code = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = code
+    }
+    return code.toString()
+}
+
+/**指定gradle以utf8编码进行java编译*/
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+android {
+    compileSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+    buildToolsVersion BUILD_TOOL_VERSION
+    /**发布签名配置-通过读取配置文件设置或者利用Android Studio提供的打包功能**/
+    signingConfigs {
+        debug {}
+        release {}
+    }
+    /**默认配置*/
+    defaultConfig {
+        applicationId APPLICATION_ID
+        minSdkVersion Integer.parseInt(MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(APP_VERSION_CODE)
+        versionName APP_VERSION_NAME
+        ndk {
+            //模块名称
+            moduleName APP_NAME
+            //默认是生成三个平台的"armeabi", "armeabi-v7a", "x86"；
+            abiFilters "armeabi", "armeabi-v7a", "x86"
+        }
+
+        /**开启multidex支持，dex突破65535的限制*/
+        multiDexEnabled true
+        /**默认是guanfang的渠道*/
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "aht"]
+    }
+
+    /**增加虚拟机堆内存大小*/
+    dexOptions {
+        javaMaxHeapSize "2048M"
+        preDexLibraries = false
+    }
+
+    sourceSets {
+        main {
+            //指明jniLibs的目录
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7 //由于Android Studio1.4目前编译的源码最高只支持1.7，1.8还没有完全支持
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    /**build时lint检查，若有错误或者警告是否终止：true是；false否*/
+    lintOptions {
+        abortOnError false
+        disable 'InvalidPackage'
+    }
+/**构建打包配置*/
+    buildTypes {
+        debug {//开发环境
+            //是否允许调试
+            debuggable true
+            //是否混淆
+            minifyEnabled false
+            //混淆配置文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //开启压缩
+            zipAlignEnabled false
+            //打包签名配置
+            signingConfig signingConfigs.debug
+            //清除无用资源
+            shrinkResources false
+            ndk {
+                //默认是生成三个平台的"armeabi", "armeabi-v7a", "x86"；
+                abiFilters "armeabi", "armeabi-v7a", "x86"
+            }
+            //自定义字段，是否显示业务码
+            buildConfigField "boolean", "IS_SHOW_BUSI_CODE", "true"
+
+        }
+
+
+        release {//生产环境
+            //是否允许调试
+            debuggable false
+            //是否混淆
+            minifyEnabled true
+            //混淆配置文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //开启压缩
+            zipAlignEnabled true
+            //清除无用资源
+            shrinkResources true
+            //自定义字段，是否显示业务码,正式发布的版本不启用该配置
+            buildConfigField "boolean", "IS_SHOW_BUSI_CODE", "false"
+        }
+    }
+
+    /**
+     * 修改app的名称和生成的apk最终文件名
+     */
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (variant.buildType.name.equalsIgnoreCase("debug")) {
+                outputFileName = APP_NAME + "_v${variant.versionName}_${variant.productFlavors[0].name}_${variant.buildType.name}.apk".toLowerCase()
+            } else if (variant.buildType.name.equalsIgnoreCase("ebeta")) {
+                outputFileName = APP_NAME + "_v${variant.versionName}_${packageTime()}_${variant.buildType.name}.apk".toLowerCase()
+            } else {//打包时用
+                outputFileName = APP_NAME + "_v${variant.versionName}_${variant.productFlavors[0].name}_${packageTime()}_${variant.buildType.name}.apk".toLowerCase()
+            }
+        }
+    }
+
+    flavorDimensions "tier"//新增的,值是数组
+    /**
+     * 渠道配置-批量设置（适用于渠道不多情况）
+     * <br/>最终改为结合360加固辅助打包
+     * */
+    productFlavors {
+        kid {/**000-测试渠道*/
+            dimension "tier"}
+    }
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/services/javax.annotation.processing.Processor' //for butterknife
+        exclude 'org/apache/http/client/version.properties'
+    }
+}
+
+/*************************读取配置***************************/
+/**获取签名配置*/
+/***
+ * signing.properties文件放置于主应用module目录下，不加入git管理，内容为：
+ ##打包签名配置
+ [USERDATA]
+ STORE_FILE=../../android_demo_keystore.jks ##/path/to/your.jks
+ STORE_PASSWORD=androiddemo
+ KEY_ALIAS=androiddemo
+ KEY_PASSWORD=androiddemo
+ */
+//发布模式签名-用于发布签名管理，但git管理的jks不是正式签名文件，只是临时替换文件。只有运维打包时需要正式签名再替换为正式签名文件
+File propFile = file('signing.properties');
+if (propFile.exists()) {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(propFile))
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        //发布模式签名
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+        android.signingConfigs.release.v2SigningEnabled = false
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    android.buildTypes.release.signingConfig = null
+}
+
+//开发模式签名设置-用于正式签名调试或者其他临时签名调试
+File debug_propFile = file('debug-signing.properties');
+if (debug_propFile.exists()) {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(debug_propFile))
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        //开发模式签名
+        android.signingConfigs.debug.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.debug.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.debug.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.debug.keyPassword = props['KEY_PASSWORD']
+        android.signingConfigs.debug.v2SigningEnabled = false
+    }
+}else{
+
+}
+
+/**项目依赖配置*/
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    //web开发支持库
+//    compile files('src/main/libs/cordova-3.5.1.jar')
+    //每个Application都要添加
+    annotationProcessor "com.jakewharton:butterknife-compiler:8.8.1"
+    //自定义基础库
+    //htAndroid基础库-本地测试用则这样引用
+    api project(':sharinglibrary')
+
+}
+/*************************MultiDex task相关配置 start***************************/
+/**
+ * 使用以下方式配置完成后，clean 然后 rebuild 项目，完成之后在 module 下的build/intermediates/multi-dex/xxx里找到 maindexlist.txt 文件
+ * （若找不到，则rebuild项目生成），复制文件里面的内容到 module 根目录下 multidex.keep 文件中（没有则先创建此文件）。
+ */
+//multidex.keep列出一份启动App时需要加载的类的清单，并告诉编译器这些类要保留在主dex文件中
+//每次在编译的时候将multidex.keep文件中的内容添加到`maindexlist.txt"中
+android.applicationVariants.all { variant ->
+    println "applicationVariants.each: $variant"
+    task "fix${variant.name.capitalize()}MainDexClassList" << {
+        logger.info "Fixing main dex keep file for $variant.name"
+        File keepFile = new File("$buildDir/intermediates/multi-dex/${variant.productFlavors[0].name}/$variant.buildType.name/maindexlist.txt")
+
+        keepFile.withWriterAppend { w ->
+            // Get a reader for the input file
+            w.append('\n')
+            new File("${projectDir}/multidex.keep").withReader { r ->
+                // And write data from the input into the output
+                w << r << '\n'
+            }
+            logger.info "Updated main dex keep file for ${keepFile.getAbsolutePath()}\n$keepFile.text"
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    android.applicationVariants.all { variant ->
+        if (task.name == "create${variant.name.capitalize()}MainDexClassList") {
+            task.finalizedBy "fix${variant.name.capitalize()}MainDexClassList"
+        }
+    }
+}
+
+/*************************MultiDex task相关配置 end***************************/
+
+/**
+ * 去除无用的构建任务task
+ */
+tasks.whenTaskAdded { task ->
+    if (task.name.contains('AndroidTest') || task.name.contains('Test')) {
+        task.enabled = false
+    }
+}

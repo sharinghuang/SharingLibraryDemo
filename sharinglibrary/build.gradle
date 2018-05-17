@@ -1,0 +1,100 @@
+apply plugin: 'com.android.library'
+
+/**指定gradle以utf8编码进行java编译*/
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+android {
+    compileSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+    buildToolsVersion BUILD_TOOL_VERSION
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName new StringBuffer().append(VERSION_NAME).toString()
+    }
+
+    /**构建打包配置*/
+    buildTypes {
+        debug {
+            //是否允许调试
+            debuggable true
+        }
+        release {
+            //是否允许调试
+            debuggable false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7 //由于Android Studio1.4目前编译的源码最高只支持1.7，1.8还没有完全支持
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    /*************************编译libs目录下的so文件，如百度定位***************************/
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+/**
+ * 项目依赖全局配置
+ * Force Android Studio to Update Maven Snapshot Dependencies
+ * */
+configurations.all {
+    // check for updates every build（实时更新snapshot版本）
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+ext {
+    supportLibVersion = SUPPORT_LIB_VERSION  // variable that can be referenced to keep support libs consistent
+}
+/**项目依赖配置*/
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    //google design
+    api "com.android.support:design:${supportLibVersion}"
+    api "com.android.support:appcompat-v7:${supportLibVersion}"
+    api "com.android.support:recyclerview-v7:${supportLibVersion}"
+    //multidex
+    api 'com.android.support:multidex:1.0.3'
+    //butterknife
+    api "com.jakewharton:butterknife:8.8.1"
+    //数据库
+    api 'de.greenrobot:greendao-generator:2.1.0'
+    //图片处理 google glide -----> https://github.com/bumptech/glide
+    api 'com.github.bumptech.glide:glide:3.7.0'
+    //加密键值存储，替代SharedPreferences来存储关键数据，源码地址-----> https://github.com/orhanobut/hawk
+    api 'com.orhanobut:hawk:2.0.1'
+    //EventBus是一款针对Android 优化的发布/订阅事件总线。源码地址-----> https://github.com/greenrobot/EventBus
+    api 'org.greenrobot:eventbus:3.0.0'
+    //磁盘缓存库-----> https://github.com/JakeWharton/DiskLruCache
+    api 'com.jakewharton:disklrucache:2.0.2'
+    //html解析工具
+    api 'org.jsoup:jsoup:1.10.2'
+    //bugly
+    api 'com.tencent.bugly:nativecrashreport:3.1.2'
+    api 'com.tencent.bugly:crashreport_upgrade:1.2.3'
+    //umeng
+    api 'com.umeng.analytics:analytics:6.1.4'
+    //授权
+    api 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'
+    /*动画库
+      Lottie是一个支持Android、iOS、React Native，并由 Adobe After Effects制作aep格式的动画，然后经由bodymovin插件转化渲染为json格式可被移动端本地识别解析的Airbnb开源库。
+      Lottie实时呈现After Effects动画效果，让应用程序可以像使用静态图片一样轻松地使用动画。
+      Lottie支持API 14及以上。
+    */
+    //源码地址-----> https://github.com/airbnb/lottie-android
+    api('com.airbnb.android:lottie:2.0.0', {
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-vector-drawable'
+        exclude group: 'com.android.support', module: 'animated-vector-drawable'
+    })
+}
