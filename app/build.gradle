@@ -129,13 +129,6 @@ android {
         flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/services/javax.annotation.processing.Processor' //for butterknife
-        exclude 'org/apache/http/client/version.properties'
-    }
 }
 
 /*************************读取配置***************************/
@@ -191,17 +184,6 @@ ext {
 }
 
 
-/**
- * 项目依赖全局配置
- * Force Android Studio to Update Maven Snapshot Dependencies
- * */
-configurations.all {
-    // check for updates every build（实时更新snapshot版本）
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    //强制使用25.0.0版本（避免依赖冲突）
-//    resolutionStrategy.force 'com.android.support:support-annotations:25.0.0'
-    exclude module: 'httpclient'exclude module: 'commons-logging'
-}
 
 /**项目依赖配置*/
 dependencies {
@@ -213,7 +195,7 @@ dependencies {
     //自定义基础库
     //htAndroid基础库-本地测试用则这样引用
     api project(':sharinglibrary')
-//    implementation 'com.github.sharinghuang:SharingLibraryDemo:1.0'
+//    api 'com.github.sharinghuang:SharingLibraryDemo:2.0'
 //    api "com.android.support:design:${supportLibVersion}"
 //    api "com.android.support:appcompat-v7:${supportLibVersion}"
 //    api "com.android.support:recyclerview-v7:${supportLibVersion}"
@@ -253,12 +235,3 @@ tasks.whenTaskAdded { task ->
 }
 
 /*************************MultiDex task相关配置 end***************************/
-
-/**
- * 去除无用的构建任务task
- */
-tasks.whenTaskAdded { task ->
-    if (task.name.contains('AndroidTest') || task.name.contains('Test')) {
-        task.enabled = false
-    }
-}
