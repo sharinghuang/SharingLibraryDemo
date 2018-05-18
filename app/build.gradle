@@ -5,20 +5,6 @@ def packageTime() {
     return new Date().format("yyyyMMdd-HHmm")
 }
 
-/**定义打包的用户名*/
-def hostName() {
-    return System.getProperty("user.name") + "@" + InetAddress.localHost.hostName
-}
-/**定义打包时最后一次commit的sha值*/
-def revision() {
-    def code = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = code
-    }
-    return code.toString()
-}
-
 /**指定gradle以utf8编码进行java编译*/
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -200,6 +186,22 @@ if (debug_propFile.exists()) {
 }else{
 
 }
+ext {
+    supportLibVersion = SUPPORT_LIB_VERSION  // variable that can be referenced to keep support libs consistent
+}
+
+
+/**
+ * 项目依赖全局配置
+ * Force Android Studio to Update Maven Snapshot Dependencies
+ * */
+configurations.all {
+    // check for updates every build（实时更新snapshot版本）
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    //强制使用25.0.0版本（避免依赖冲突）
+//    resolutionStrategy.force 'com.android.support:support-annotations:25.0.0'
+    exclude module: 'httpclient'exclude module: 'commons-logging'
+}
 
 /**项目依赖配置*/
 dependencies {
@@ -211,6 +213,10 @@ dependencies {
     //自定义基础库
     //htAndroid基础库-本地测试用则这样引用
     api project(':sharinglibrary')
+//    implementation 'com.github.sharinghuang:SharingLibraryDemo:1.0'
+//    api "com.android.support:design:${supportLibVersion}"
+//    api "com.android.support:appcompat-v7:${supportLibVersion}"
+//    api "com.android.support:recyclerview-v7:${supportLibVersion}"
 
 }
 /*************************MultiDex task相关配置 start***************************/

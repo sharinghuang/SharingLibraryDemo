@@ -1,7 +1,9 @@
 apply plugin: 'com.android.library'
+// 使用jitPack
 apply plugin: 'com.github.dcendents.android-maven'
-// alidili改成你的GitHub账户名
 group = 'com.github.sharinghuang'
+////使用jCenter
+//apply plugin: 'com.jfrog.bintray'
 
 /**指定gradle以utf8编码进行java编译*/
 tasks.withType(JavaCompile) {
@@ -42,6 +44,11 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 /**
@@ -54,7 +61,8 @@ configurations.all {
 }
 
 ext {
-    supportLibVersion = SUPPORT_LIB_VERSION  // variable that can be referenced to keep support libs consistent
+    supportLibVersion = SUPPORT_LIB_VERSION
+    // variable that can be referenced to keep support libs consistent
 }
 /**项目依赖配置*/
 dependencies {
@@ -100,4 +108,84 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
     })
+
+//    /** jCenter相关配置*/
+//    version = "1.0.0"    //这个是版本号，必须填写
+//    def siteUrl = 'https://github.com/sharinghuang/SharingLibraryDemo'      // 项目的主页
+//    def gitUrl = 'https://github.com/sharinghuang/SharingLibraryDemo.git'   // Git仓库的url
+//    group = "com.sharing.library"         // Maven Group ID for the artifact，一般填你唯一的包名
+//    install {
+//        repositories.mavenInstaller {
+//            // This generates POM.xml with proper parameters
+//            pom {
+//                project {
+//                    packaging 'aar'
+//                    // Add your description here
+//                    name 'baseLib for sharing.'     //项目描述
+//                    url siteUrl
+//                    // Set your license
+//                    licenses {
+//                        license {
+//                            name 'The Apache Software License, Version 2.0'
+//                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                        }
+//                    }
+//                    developers {
+//                        developer {
+//                            id 'sharing'        //填写的一些基本信息
+//                            name 'sharing'
+//                            email 'huangsharing@163.com'
+//                        }
+//                    }
+//                    scm {
+//                        connection gitUrl
+//                        developerConnection gitUrl
+//                        url siteUrl
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    task sourcesJar(type: Jar) {
+//        from android.sourceSets.main.java.srcDirs
+//        classifier = 'sources'
+//    }
+//    task javadoc(type: Javadoc) {
+//        options.encoding = "UTF-8"
+//        source = android.sourceSets.main.java.srcDirs
+//        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//    }
+//    task javadocJar(type: Jar, dependsOn: javadoc) {
+//        classifier = 'javadoc'
+//        from javadoc.destinationDir
+//    }
+//    javadoc {
+//        options {
+//            encoding "UTF-8"
+//            charSet 'UTF-8'
+//            author true
+//            version true
+//            links "http://docs.oracle.com/javase/7/docs/api"
+//            title 'A CalendarView Support Lunar Calendar For Android'   // 文档标题
+//        }
+//    }
+//    artifacts {
+//        archives javadocJar
+//        archives sourcesJar
+//    }
+//    Properties properties = new Properties()
+//    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//    bintray {
+//        user = properties.getProperty("bintray.user")
+//        key = properties.getProperty("bintray.apikey")
+//        configurations = ['archives']
+//        pkg {
+//            repo = "maven"
+//            name = "sharingLibrary"    //发布到JCenter上的项目名字
+//            websiteUrl = siteUrl
+//            vcsUrl = gitUrl
+//            licenses = ["Apache-2.0"]
+//            publish = true
+//        }
+//    }
 }
