@@ -109,30 +109,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
     })
 
-// build a jar with source files
-    task sourcesJar(type: Jar) {
-        from android.sourceSets.main.java.srcDirs
-        classifier = 'sources'
-    }
-
-    task javadoc(type: Javadoc) {
-        failOnError false
-        source = android.sourceSets.main.java.sourceFiles
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-        classpath += configurations.compile
-    }
-
-// build a jar with javadoc
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
 //    /** jCenter相关配置*/
 //    version = "1.0.0"    //这个是版本号，必须填写
 //    def siteUrl = 'https://github.com/sharinghuang/SharingLibraryDemo'      // 项目的主页
