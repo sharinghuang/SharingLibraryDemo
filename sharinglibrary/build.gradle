@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.sharinghuang'
 
+
 /**指定gradle以utf8编码进行java编译*/
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -58,6 +59,7 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
+
 ext {
     supportLibVersion = SUPPORT_LIB_VERSION
     // variable that can be referenced to keep support libs consistent
@@ -106,4 +108,28 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
     })
+
+    // build a jar with source files
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+
+    task javadoc(type: Javadoc) {
+        failOnError  false
+        source = android.sourceSets.main.java.sourceFiles
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += configurations.compile
+    }
+
+// build a jar with javadoc
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
 }
