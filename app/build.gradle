@@ -195,7 +195,7 @@ dependencies {
     //自定义基础库
     //htAndroid基础库-本地测试用则这样引用
     api project(':sharinglibrary')
-//    api 'com.github.sharinghuang:SharingLibraryDemo:2.0'
+//    api 'com.github.sharinghuang:SharingLibraryDemo:3.0'
 //    api "com.android.support:design:${supportLibVersion}"
 //    api "com.android.support:appcompat-v7:${supportLibVersion}"
 //    api "com.android.support:recyclerview-v7:${supportLibVersion}"
