@@ -1,7 +1,67 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.DarkActionBar"></style>
+
+
+    <!--自定义confirm dialog样式-->
+    <style name="confirm_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFullscreen">false</item>
+        <!--无全屏-->
+        <item name="android:windowFrame">@null</item>
+        <!--边框-->
+        <item name="android:windowIsFloating">true</item>
+        <!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item>
+        <!--半透明-->
+        <item name="android:windowNoTitle">true</item>
+        <!--无标题-->
+        <!--<item name="android:windowBackground">@drawable/bg_t99_custom_dialog</item>-->
+        <!--自定义半透明背景，但设置了会导致在某些机型（I9100 4.4.4）下，宽度撑满屏幕，需要在代码中区别处理-->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!--背景变暗或模糊（全屏遮罩）-->
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!-- 自定义loading dialog -->
+    <style name="loading_dialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!--边框-->
+        <item name="android:windowIsFloating">true</item>
+        <!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item>
+        <!--半透明-->
+        <item name="android:windowNoTitle">true</item>
+        <!--无标题-->
+        <item name="android:windowBackground">@drawable/custom_toast_bg</item>
+        <!--自定义半透明背景-->
+        <item name="android:backgroundDimEnabled">false</item>
+        <!--不显示遮罩-->
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowBackground">@color/transparent</item>
+        <!-- 背景透明 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 模糊 -->
+    </style>
+
+    <!--通用编辑框的style-->
+    <style name="CommonEditText">
+        <item name="android:layout_height">@dimen/common_edit_text_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/global_main_black_day</item>
+        <item name="android:textColorHint">@color/global_aux_black_day</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
 </resources>

@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * <p>SlideFinishLayout类 1、右滑销毁页面</p>
  *
- * @author zengyaping<br/>
+ * @author hxm<br/>
  * @version 1.0 (2015-10-29 8:11)<br/>
  */
 public class SlideFinishLayout extends FrameLayout {

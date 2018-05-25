@@ -5,15 +5,15 @@ import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
-import android.text.TextUtils;
 
-
+import com.orhanobut.hawk.Hawk;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
+import com.sharing.library.BuildConfig;
+import com.sharing.library.manager.FolderManager;
 import com.sharing.library.utils.LocalDisplayUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,30 +31,26 @@ public class BaseApplication extends Application {
 
     private static BaseApplication instance;
 
-    /** 登录Token */
-    protected String token = "";
-    /** 登录Token对应的Key */
-    protected String tokenKey = "";
-    /** 请求报头(Thrift) */
-    protected HashMap<String, String> thriftHeaderMap = new HashMap<String, String>();
-
-    private Handler handler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            dealMessage(msg);
-        }
-    };
-
 
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
-
+        //初始化文件夹
+        FolderManager.initSystemFolder();
         //初始化视图显示相关工具类
         LocalDisplayUtils.init(this);
+        //初始化日志打印类
+        Logger.addLogAdapter(new AndroidLogAdapter() {
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
+        if (!Hawk.isBuilt()) {//若尚未初始化，则初始化
+            /**初始化键值加密存储工具*/
+            Hawk.init(this).build();
+        }
     }
 
 
@@ -121,85 +117,4 @@ public class BaseApplication extends Application {
         }
     }
 
-    /**
-     * 获取句柄
-     *
-     * @return
-     */
-    public Handler getHandler() {
-
-        return this.handler;
-    }
-
-    /**
-     * 处理消息
-     *
-     * @param msg 消息
-     */
-    protected void dealMessage(Message msg) {
-    }
-
-    /**
-     * 获取Token信息
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * 设置Token
-     *
-     * @param token token信息
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    /**
-     * 获取TokenKey
-     *
-     * @return
-     */
-    public String getTokenKey() {
-        return tokenKey;
-    }
-
-    /**
-     * 设置TokenKey
-     *
-     * @param tokenKey key值
-     */
-    public void setTokenKey(String tokenKey) {
-        this.tokenKey = tokenKey;
-    }
-
-    /**
-     * 获取Thrift请求头
-     *
-     * @return
-     */
-    public HashMap<String, String> getThriftHeaderMap() {
-        return thriftHeaderMap;
-    }
-
-    /**
-     * 设置Thrift请求头
-     *
-     * @param thriftHeaderMap 请求头键值对
-     */
-    public void setThriftHeaderMap(HashMap<String, String> thriftHeaderMap) {
-        this.thriftHeaderMap = thriftHeaderMap;
-    }
-
-    /**
-     * 添加Thrift请求头
-     *
-     * @param key   键
-     * @param value 值
-     */
-    public void addThriftHeader(String key, String value) {
-        if (!TextUtils.isEmpty(key)) {
-            this.thriftHeaderMap.put(key, value);
-        }
-    }
 }

@@ -3,7 +3,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.sharinghuang'
 
-
 /**指定gradle以utf8编码进行java编译*/
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -79,6 +78,7 @@ dependencies {
     api 'de.greenrobot:greendao-generator:2.1.0'
     //图片处理 google glide -----> https://github.com/bumptech/glide
     api 'com.github.bumptech.glide:glide:3.7.0'
+    api 'jp.wasabeef:glide-transformations:2.0.1'
     //加密键值存储，替代SharedPreferences来存储关键数据，源码地址-----> https://github.com/orhanobut/hawk
     api 'com.orhanobut:hawk:2.0.1'
     //EventBus是一款针对Android 优化的发布/订阅事件总线。源码地址-----> https://github.com/greenrobot/EventBus
@@ -94,6 +94,8 @@ dependencies {
     api 'com.umeng.analytics:analytics:6.1.4'
     //授权
     api 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'
+    //日志打印
+    api 'com.orhanobut:logger:2.2.0'
     /*动画库
       Lottie是一个支持Android、iOS、React Native，并由 Adobe After Effects制作aep格式的动画，然后经由bodymovin插件转化渲染为json格式可被移动端本地识别解析的Airbnb开源库。
       Lottie实时呈现After Effects动画效果，让应用程序可以像使用静态图片一样轻松地使用动画。
@@ -116,7 +118,7 @@ dependencies {
     }
 
     task javadoc(type: Javadoc) {
-        failOnError  false
+        failOnError false
         source = android.sourceSets.main.java.sourceFiles
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
         classpath += configurations.compile

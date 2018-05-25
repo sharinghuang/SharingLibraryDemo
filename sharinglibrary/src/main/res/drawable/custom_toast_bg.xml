@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自定义toast背景-圆角样式 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!--圆角设置：四方圆角-->
+    <corners android:radius="6dp"/>
+
+    <!--填充颜色-->
+    <solid android:color="@color/transparent80" />
+
+</shape>

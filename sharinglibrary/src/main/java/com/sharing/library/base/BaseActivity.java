@@ -27,6 +27,10 @@ public class BaseActivity extends AppCompatActivity {
     protected Context mContext;
     protected Activity activity;
     private boolean hasInvokedSlideFinish = false;
+    /** 记录上次点击返回键的时间 */
+    private long lastTime;
+    protected boolean isDoubleClickClose = false;
+
 
 
     //执行区 start======================================
@@ -44,6 +48,20 @@ public class BaseActivity extends AppCompatActivity {
         BaseApplication.getInstance().addActivity(this);
     }
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) { //监控/拦截/屏蔽返回键
+//            if (System.currentTimeMillis() - lastTime > 1500 && isDoubleClickClose) {
+//                CustomToast.showToast(this, "再次点击返回上一层");
+//                lastTime = System.currentTimeMillis();
+//            } else {
+//                onBackEventClick();
+//            }
+//            return false;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+//
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);

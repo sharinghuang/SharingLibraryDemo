@@ -3,4 +3,48 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <!--透明相关-->
+    <!--透明-->
+    <color name="transparent">#00000000</color>
+    <color name="transparent60">#000000</color>
+    <color name="transparent80">#CC000000</color>
+    <color name="transparent90">#20000000</color>
+
+    <!--通用按钮不同点击状态下的颜色 -->
+    <color name="common_btn_disabled">#EBEBEB</color>
+    <color name="common_btn_normal">#F5F5F5</color>
+    <color name="common_btn_press">#E4E4E4</color>
+
+    <!--控件不可用时上面的文字颜色 -->
+    <color name="common_text_disabled">#C7C7C7</color>
+    <!--辅助按钮-不可点击状态文字颜色 -->
+    <color name="common_aux_btn_disabled_text">#C7C7C7</color>
+    <!--描边颜色-一般用于按钮描边  -->
+    <color name="common_stroke">#C5C5C5</color>
+    <!-- 输入框提示文本颜色  -->
+    <color name="common_input_hint_color">#c8c7cc</color>
+
+    <!--主体灰-用于辅助说明文字及图表（如输入框的默认提示文字、默认缺省图Icon）-->
+    <color name="global_main_gray">#A1A7AE</color>
+    <!-- 40%浅灰色 -->
+    <color name="gray_light40">#b4b3b3</color>
+
+    <!--白天模式的颜色值-->
+    <!--主要背景颜色 -->
+    <color name="base_soft_bg_day">#F2F3F4</color>
+    <!--主体黑-用于主体重要文字信息（如标题文字）-->
+    <color name="global_main_black_day">#222222</color>
+    <!--辅助黑-用于提示语、重要说明文字及图表，仅次于主体黑（如信息内容）-->
+    <color name="global_aux_black_day">#6B6A72</color>
+
+    <!--夜间模式的颜色值-->
+    <!--主要背景颜色 -->
+    <color name="base_soft_bg_night">#3A3A3A</color>
+    <!--主体黑-用于主体重要文字信息（如标题文字）-->
+    <color name="global_main_black_night">#8A9599</color>
+    <!--辅助黑-用于提示语、重要说明文字及图表，仅次于主体黑（如信息内容）-->
+    <color name="global_aux_black_night">#868686</color>
+
 </resources>

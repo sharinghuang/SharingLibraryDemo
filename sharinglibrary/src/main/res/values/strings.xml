@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">SharingLibrary</string>
+
+
+    <string name="common_loading_data">加载中...</string>
+    <!--空字符串-->
+    <string name="common_empty">""</string>
+    <!--斜线分割符-->
+    <string name="common_slash_text">/</string>
+    <!--自定义dialog-->
+    <string name="custom_dialog_default_tip">温馨提示</string>
+    <string name="custom_dialog_btn_confirm">确定</string>
+    <string name="custom_dialog_btn_cancel">取消</string>
 </resources>

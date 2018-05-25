@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 自定义dialog遮罩样式 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--四方圆角-->
+    <corners android:radius="3dp"/>
+    <!--填充颜色-半透明-->
+    <solid android:color="@color/transparent60"/>
+</shape>
